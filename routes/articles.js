@@ -4,7 +4,7 @@ const { getArticles, createArticle, deleteArticle } = require('../controllers/ar
 const { articleCreateValidation } = require('../middlewares/validation/articlecreate-validation');
 const { auth } = require('../middlewares/auth');
 
-articlesRouter.get('/articles', getArticles);
+articlesRouter.get('/articles', auth, getArticles);
 
 articlesRouter.post('/articles', auth, celebrate(articleCreateValidation), createArticle);
 
