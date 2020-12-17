@@ -4,10 +4,10 @@
   
 API проект доступен по адресу:
 
-http://news-explorer-seriojakarelin.students.nomoredomains.work/
+http://api.newsexplorer-seriojakarelin.students.nomoredomains.work/
 
 Crash-test по адресу:
 
-http://news-explorer-seriojakarelin.students.nomoredomains.work/crash-test
+http://api.newsexplorer-seriojakarelin.students.nomoredomains.work/crash-test
 
 Стек технологий: MongoDB, JavaScript, Git, Node.js, API REST
