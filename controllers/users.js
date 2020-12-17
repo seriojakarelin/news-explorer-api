@@ -1,12 +1,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const BadRequestError = require('../errors/bad-request-error');
 const ConflictError = require('../errors/conflict-error');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUser = (req, res, next) => {
   User.findOne({ _id: req.user._id })
@@ -69,7 +68,7 @@ module.exports.login = (req, res, next) => {
           throw new UnauthorizedError('Неправильные почта или пароль');
         }
 
-        const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { noTimestamp: true, expiresIn: '7d' });
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { noTimestamp: true, expiresIn: '7d' });
 
         return res.send({ token });
       });

@@ -4,27 +4,30 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const cors = require('cors');
+const helmet = require('helmet');
+const limiter = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routes = require('./routes/index');
-
-const { PORT = 3000 } = process.env;
+const {
+  PORT, MONGO_URL, mongooseConfig,
+} = require('./config');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/newsexplorerdb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+mongoose.connect(MONGO_URL, mongooseConfig);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
+
+app.use(limiter);
+
+app.use(helmet());
 
 app.use(requestLogger);
 
