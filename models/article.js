@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const {
+  enterUrlMessage,
+} = require('../constants');
 
 const articleSchema = new mongoose.Schema({
   keyword: {
@@ -26,7 +29,7 @@ const articleSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_.~#?&//=]*)/.test(v),
-      message: 'введите URL',
+      message: enterUrlMessage,
     },
   },
   image: {
@@ -34,7 +37,7 @@ const articleSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_.~#?&//=]*)/.test(v),
-      message: 'введите URL',
+      message: enterUrlMessage,
     },
   },
   owner: {

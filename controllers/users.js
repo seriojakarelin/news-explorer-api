@@ -6,16 +6,22 @@ const NotFoundError = require('../errors/not-found-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const BadRequestError = require('../errors/bad-request-error');
 const ConflictError = require('../errors/conflict-error');
+const {
+  userIdNotFoundErr,
+  validationErr,
+  sameEmailErr,
+  wrongPassOrEmailErr,
+} = require('../constants');
 
 module.exports.getUser = (req, res, next) => {
   User.findOne({ _id: req.user._id })
-    .orFail(new NotFoundError('Пользователь с таким id не найден'))
+    .orFail(new NotFoundError(userIdNotFoundErr))
     .then((data) => {
-      res.status(200).send(data);
+      res.send(data);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Ошибка валидации');
+        throw new BadRequestError(validationErr);
       }
       throw err;
     })
@@ -30,7 +36,7 @@ module.exports.createUser = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (user) {
-        throw new ConflictError('Пользователь с таким email уже существует');
+        throw new ConflictError(sameEmailErr);
       }
       return bcrypt.hash(password, 10);
     })
@@ -44,11 +50,11 @@ module.exports.createUser = (req, res, next) => {
         name: createdUser.name,
         email: createdUser.email,
       };
-      res.status(200).send({ data: user });
+      res.send({ data: user });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        throw new BadRequestError('Ошибка валидации');
+        throw new BadRequestError(validationErr);
       }
       throw error;
     })
@@ -60,12 +66,12 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Неправильные почта или пароль');
+        throw new UnauthorizedError(wrongPassOrEmailErr);
       }
 
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          throw new UnauthorizedError('Неправильные почта или пароль');
+          throw new UnauthorizedError(wrongPassOrEmailErr);
         }
 
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { noTimestamp: true, expiresIn: '7d' });

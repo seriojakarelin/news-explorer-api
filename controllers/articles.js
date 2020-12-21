@@ -2,11 +2,16 @@ const Article = require('../models/article');
 const NotFoundError = require('../errors/not-found-err');
 const ForbiddenError = require('../errors/forbidden-error');
 const BadRequestError = require('../errors/bad-request-error');
+const {
+  validationErr,
+  articleIdNotFoundErr,
+  noRightsToDeleteErr,
+} = require('../constants');
 
 module.exports.getArticles = ((req, res, next) => {
   Article.find({})
     .then((data) => {
-      res.status(200).send(data);
+      res.send(data);
     })
     .catch(next);
 });
@@ -33,11 +38,13 @@ module.exports.createArticle = ((req, res, next) => {
     owner,
   })
     .then((article) => {
-      res.status(200).send(article);
+      const createdArticle = article.toObject();
+      delete createdArticle.owner;
+      res.send(createdArticle);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Ошибка валидации');
+        throw new BadRequestError(validationErr);
       }
       throw err;
     })
@@ -46,16 +53,24 @@ module.exports.createArticle = ((req, res, next) => {
 
 module.exports.deleteArticle = ((req, res, next) => {
   Article.findById({ _id: req.params.id })
-    .orFail(new NotFoundError('Нет карточки с таким id'))
+    .orFail(new NotFoundError(articleIdNotFoundErr))
     .select('+owner')
     .then((article) => {
       if (!article.owner.equals(req.user._id)) {
-        throw new ForbiddenError('Недостаточно прав для удаления карточки');
+        throw new ForbiddenError(noRightsToDeleteErr);
       }
       Article.deleteOne(article)
         .then(() => {
-          res.status(200).send(article);
+          const deletedArticle = article.toObject();
+          delete deletedArticle.owner;
+          res.send(deletedArticle);
         });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError(validationErr);
+      }
+      throw err;
     })
     .catch(next);
 });

@@ -1,13 +1,12 @@
 const articlesRouter = require('express').Router();
-const { celebrate } = require('celebrate');
 const { getArticles, createArticle, deleteArticle } = require('../controllers/articles');
-const { articleCreateValidation } = require('../middlewares/validation/articlecreate-validation');
+const { paramsIdValidation, articleValidation } = require('../middlewares/validation');
 const { auth } = require('../middlewares/auth');
 
 articlesRouter.get('/articles', auth, getArticles);
 
-articlesRouter.post('/articles', auth, celebrate(articleCreateValidation), createArticle);
+articlesRouter.post('/articles', auth, articleValidation, createArticle);
 
-articlesRouter.delete('/articles/:id', auth, deleteArticle);
+articlesRouter.delete('/articles/:id', auth, paramsIdValidation, deleteArticle);
 
 module.exports = articlesRouter;
