@@ -1,6 +1,8 @@
 const { NODE_ENV } = process.env;
 
-module.exports.PORT = process.env.PORT || 3000;
+// module.exports.PORT = process.env.PORT || 3001;
+
+module.exports.PORT = 3001;
 
 module.exports.JWT_SECRET = NODE_ENV === 'production' ? process.env.JWT_SECRET : 'dev-secret';
 
