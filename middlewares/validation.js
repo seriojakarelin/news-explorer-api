@@ -58,6 +58,9 @@ const articleValidation = celebrate({
       .required(),
     source: Joi.string()
       .required(),
+    id: Joi.string()
+      .alphanum()
+      .required(),
     link: Joi.string()
       .required()
       .custom((value, helpers) => {
