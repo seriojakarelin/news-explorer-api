@@ -58,7 +58,7 @@ const articleValidation = celebrate({
       .required(),
     source: Joi.string()
       .required(),
-    id: Joi.string()
+    owner: Joi.string()
       .alphanum()
       .required(),
     link: Joi.string()
